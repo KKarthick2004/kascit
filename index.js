@@ -14,13 +14,23 @@ const mongooseConnect=async ()=>{
       console.log(err)
     }
     }
-app.post("/post",async(req,res)=>{
-   const date=new Date()
-   const { name, registerNo, gender,graduate,hsc,myambition,dept,dob}=req.body
-   const response=new model({ name, registerNo, gender,graduate,hsc,myambition,dept,dob,date})
-   const a=await response.save()
-   res.json({id:a._id,message: 'Data saved successfully'})
-})
+app.post("/post", async (req, res) => {
+      const date = new Date();
+      const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      let hours = date.getHours();
+      const minutes = date.getMinutes();
+      const seconds = date.getSeconds();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      let formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
+      formattedTime=`${formattedDate} ${formattedTime}`
+      const { name, registerNo, gender, graduate, hsc, myambition, dept, dob } = req.body;
+      const response = new model({ name, registerNo, gender, graduate, hsc, myambition, dept, dob, date: formattedTime });
+  
+      const a = await response.save();
+      res.json({ id: a._id, message: 'Data saved successfully',a});
+  });
 app.get("/get",async(req,res)=>{
     const response=await model.find({})
     res.json({response})
